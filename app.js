@@ -731,7 +731,7 @@ function showBests() {
 
 const THEMES = [
   { id: "black-and-white", label: "black and white", bg: "#000000", accent: "#ffffff" },
-  { id: "cornhub", label: "cornhub", bg: "#141414", accent: "#ff9900" },
+  { id: "presto-choco", label: "presto choco", bg: "#141414", accent: "#ff9900" },
   { id: "native-dark", label: "native dark", bg: "#232832", accent: "#4c9aff" },
   { id: "native-light", label: "native light", bg: "#eceef2", accent: "#2f6fdd" },
   { id: "redux-dark", label: "redux dark", bg: "#181819", accent: "#b48cf2" },
