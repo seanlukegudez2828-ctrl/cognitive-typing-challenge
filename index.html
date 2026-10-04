@@ -1,0 +1,1850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0b1120">
+<title>Recall — Memory Typing Challenge</title>
+<style>
+:root {
+  color-scheme: dark;
+
+  --background: #323437;
+  --surface: #2c2e31;
+  --surface-raised: #383a3e;
+  --border: #505357;
+
+  --text: #d1d0c5;
+  --muted: #a4a7ab;
+  --accent: #e2b714;
+  --accent-hover: #f2cc39;
+
+  --error: #ff8f9a;
+  --missing: #9ecbff;
+  --extra: #f5cd83;
+
+  --font: "Roboto Mono", "SFMono-Regular", Consolas,
+    "Liberation Mono", monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--background);
+  color: var(--text);
+  font-family: var(--font);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+button,
+summary {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--background);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 5px;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
+}
+
+h1,
+h2,
+h3 {
+  font-weight: 400;
+}
+
+.accent {
+  color: var(--accent);
+}
+
+.muted,
+.hint {
+  color: var(--muted);
+}
+
+/* Page layout */
+
+.shell {
+  width: min(100% - 48px, 1280px);
+  min-height: 100vh;
+  min-height: 100svh;
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.site-header {
+  min-height: 110px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 48px 0 80px;
+}
+
+main > section {
+  width: 100%;
+}
+
+/* Header */
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text);
+  font-size: 1.9rem;
+  font-weight: 600;
+  letter-spacing: -0.08em;
+}
+
+.brand-icon {
+  width: 38px;
+  height: 29px;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--accent);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--accent);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+/* Buttons */
+
+.button {
+  min-height: 44px;
+  padding: 10px 18px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.88rem;
+  font-weight: 400;
+  transition:
+    color 140ms ease,
+    background 140ms ease,
+    opacity 140ms ease;
+}
+
+.button:hover:not(:disabled) {
+  color: var(--text);
+}
+
+.primary {
+  background: var(--surface);
+  color: var(--accent);
+}
+
+.primary:hover:not(:disabled) {
+  background: var(--accent);
+  color: var(--background);
+}
+
+.secondary {
+  background: var(--surface);
+  color: var(--muted);
+}
+
+.secondary:hover:not(:disabled) {
+  background: var(--surface-raised);
+}
+
+.ghost {
+  background: transparent;
+}
+
+.small {
+  padding: 8px 12px;
+  font-size: 0.78rem;
+}
+
+.full-width {
+  width: 100%;
+}
+
+/* Home */
+
+.hero {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 0 0 32px;
+  text-align: center
+  ;
+}
+
+.eyebrow {
+  margin-bottom: 12px;
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+}
+
+.hero h1 {
+  margin: 14px 0 18px;
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 400;
+  line-height: 1.25;
+  letter-spacing: -0.06em;
+}
+
+.hero-description {
+  max-width: 610px;
+  margin: 0 auto;
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.9;
+}
+
+.panel {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+#homeScreen > .panel {
+  max-width: 980px;
+  margin-inline: auto;
+}
+
+.section-heading,
+.inline-group,
+.home-bottom,
+.input-footer,
+.result-bottom,
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.section-heading,
+.home-bottom,
+.input-footer,
+.result-bottom {
+  justify-content: space-between;
+}
+
+.section-heading {
+  margin-bottom: 22px;
+}
+
+.section-heading h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.section-heading .eyebrow {
+  margin-bottom: 6px;
+}
+
+.badge {
+  flex-shrink: 0;
+  padding: 4px 10px;
+  border: 0;
+  border-radius: 5px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+/* Difficulty toolbar */
+
+.difficulty-fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.difficulty-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  padding: 8px;
+  border-radius: 9px;
+  background: var(--surface);
+}
+
+.difficulty-option {
+  position: relative;
+  cursor: pointer;
+}
+
+.difficulty-option input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.difficulty-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  padding: 12px 8px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  text-align: center;
+  transition: background 140ms ease;
+}
+
+.difficulty-option:hover .difficulty-card {
+  background: var(--background);
+}
+
+.difficulty-name {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.difficulty-words {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 0.7rem;
+}
+
+.difficulty-timing {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 0.65rem;
+  line-height: 1.7;
+}
+
+.difficulty-option input:checked + .difficulty-card {
+  background: var(--background);
+  box-shadow: inset 0 -2px var(--accent);
+}
+
+.difficulty-option input:checked + .difficulty-card .difficulty-name {
+  color: var(--accent);
+}
+
+.difficulty-option input:focus-visible + .difficulty-card {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.home-bottom {
+  margin-top: 22px;
+}
+
+.personal-best {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.personal-best span {
+  color: var(--muted);
+  font-size: 0.73rem;
+}
+
+.personal-best strong {
+  color: var(--accent);
+  font-size: 1.1rem;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+}
+
+#startButton {
+  min-width: 200px;
+}
+
+.how-it-works {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  max-width: 980px;
+  margin: 48px auto 0;
+  padding: 0;
+  list-style: none;
+}
+
+.how-it-works li {
+  display: flex;
+  gap: 12px;
+}
+
+.step-number {
+  color: var(--accent);
+  font-size: 0.72rem;
+}
+
+.how-it-works h3 {
+  margin: 0 0 6px;
+  color: var(--text);
+  font-size: 0.78rem;
+}
+
+.how-it-works p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.7rem;
+  line-height: 1.8;
+}
+
+/* Game */
+
+#gameScreen .section-heading {
+  margin-bottom: 14px;
+}
+
+#gameScreen .inline-group .eyebrow {
+  margin: 0;
+}
+
+.round-steps {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 32px;
+}
+
+.round-step {
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 0.7rem;
+}
+
+.round-step.complete {
+  color: var(--accent);
+}
+
+.round-step.current {
+  background: var(--accent);
+  color: var(--background);
+}
+
+.phase-title {
+  margin-bottom: 10px;
+  font-size: clamp(1.3rem, 3vw, 1.9rem);
+  font-weight: 400;
+  letter-spacing: -0.04em;
+}
+
+#phaseDescription,
+#roundFeedback,
+#summaryDescription {
+  font-size: 0.85rem;
+}
+
+.timer-region {
+  margin: 28px 0;
+}
+
+.timer-label {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  color: var(--muted);
+  font-size: 0.7rem;
+}
+
+.timer-label strong {
+  color: var(--accent);
+  font-size: 1.6rem;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+}
+
+progress {
+  display: block;
+  width: 100%;
+  height: 3px;
+  overflow: hidden;
+  border: 0;
+  border-radius: 2px;
+  background: var(--surface);
+  accent-color: var(--accent);
+}
+
+progress::-webkit-progress-bar {
+  background: var(--surface);
+}
+
+progress::-webkit-progress-value {
+  background: var(--accent);
+}
+
+progress::-moz-progress-bar {
+  background: var(--accent);
+}
+
+.timer-region.urgent .timer-label strong {
+  color: var(--error);
+}
+
+.timer-region.urgent progress {
+  accent-color: var(--error);
+}
+
+.timer-region.urgent progress::-webkit-progress-value {
+  background: var(--error);
+}
+
+.timer-region.urgent progress::-moz-progress-bar {
+  background: var(--error);
+}
+
+/* Large, borderless typing area */
+
+.memory-panel {
+  min-height: 210px;
+  padding: 18px 0 28px;
+  border: 0;
+  background: transparent;
+}
+
+.memory-panel .eyebrow {
+  font-size: 0.66rem;
+}
+
+.sentence {
+  margin: 16px 0 0;
+  color: var(--text);
+  font-size: clamp(1.45rem, 3.2vw, 2rem);
+  line-height: 1.85;
+  letter-spacing: 0.015em;
+  overflow-wrap: anywhere;
+}
+
+label[for="answer"] {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+textarea {
+  display: block;
+  width: 100%;
+  min-height: 210px;
+  padding: 14px 0;
+  border: 0;
+  border-bottom: 2px solid var(--border);
+  border-radius: 0;
+  background: transparent;
+  color: var(--text);
+  caret-color: var(--accent);
+  font-family: var(--font);
+  font-size: clamp(1.35rem, 3vw, 1.85rem);
+  line-height: 1.8;
+  letter-spacing: 0.015em;
+  resize: vertical;
+}
+
+textarea:focus {
+  outline: none;
+  border-bottom-color: var(--accent);
+}
+
+textarea::placeholder {
+  color: var(--muted);
+  opacity: 0.8;
+}
+
+.input-footer {
+  flex-wrap: wrap;
+  gap: 8px 16px;
+}
+
+.hint {
+  margin: 10px 0;
+  font-size: 0.72rem;
+  line-height: 1.8;
+}
+
+kbd {
+  padding: 2px 6px;
+  border: 0;
+  border-radius: 3px;
+  background: var(--surface);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.7rem;
+}
+
+.input-notice {
+  min-height: 1.5em;
+  margin: 8px 0;
+  color: var(--extra);
+  font-size: 0.75rem;
+}
+
+#submitButton {
+  display: block;
+  width: auto;
+  min-width: 200px;
+  margin: 16px auto 0;
+}
+
+/* Result statistics */
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+  margin: 36px 0;
+}
+
+.stats-grid > div {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+}
+
+.stats-grid dt {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.stats-grid dd {
+  margin: 4px 0 0;
+  color: var(--accent);
+  font-size: clamp(1.8rem, 4vw, 2.7rem);
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: -0.06em;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+/* Text comparison */
+
+.comparison {
+  padding-top: 4px;
+}
+
+.comparison h3 {
+  margin: 22px 0 10px;
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+
+.comparison-text {
+  margin: 0;
+  padding: 18px 20px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 1rem;
+  line-height: 2;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.diff-replace {
+  background: #4b3038;
+  color: var(--error);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
+.diff-missing {
+  background: #293c50;
+  color: var(--missing);
+  border-bottom: 2px dotted var(--missing);
+}
+
+.diff-extra {
+  background: #453b29;
+  color: var(--extra);
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
+}
+
+.diff-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 18px;
+  font-size: 0.7rem;
+}
+
+.diff-legend span {
+  padding: 3px 7px;
+}
+
+.plain-answer {
+  margin-top: 18px;
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.plain-answer summary:hover {
+  color: var(--text);
+}
+
+.plain-answer .comparison-text {
+  margin-top: 12px;
+}
+
+.result-bottom {
+  flex-wrap: wrap;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+
+.result-bottom p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.result-bottom strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 1.4rem;
+  font-weight: 400;
+}
+
+.actions {
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* Session summary */
+
+.total-score {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: 32px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.total-score > span {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.total-score strong {
+  max-width: 100%;
+  color: var(--accent);
+  font-size: clamp(3.5rem, 10vw, 6rem);
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: -0.07em;
+  overflow-wrap: anywhere;
+}
+
+.total-score > span:last-child {
+  margin-top: 4px;
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+}
+
+.summary-stats {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.best-round {
+  margin-bottom: 6px;
+  color: var(--text);
+  font-size: 0.85rem;
+}
+
+.table-wrapper {
+  margin-top: 30px;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+}
+
+caption {
+  margin-bottom: 14px;
+  color: var(--muted);
+  text-align: left;
+  font-size: 0.8rem;
+}
+
+th,
+td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  text-align: right;
+  white-space: nowrap;
+}
+
+th {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+thead {
+  background: var(--surface);
+}
+
+th:first-child,
+td:first-child {
+  text-align: left;
+}
+
+td:last-child {
+  color: var(--accent);
+}
+
+.summary-actions {
+  justify-content: center;
+  margin-top: 30px;
+}
+
+/* Footer and messages */
+
+.site-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 24px 0 28px;
+  color: var(--muted);
+  font-size: 0.68rem;
+}
+
+.storage-notice {
+  margin: 16px 0;
+  padding: 14px 18px;
+  border-left: 2px solid var(--accent);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--extra);
+  font-size: 0.75rem;
+}
+
+/* How to play */
+
+dialog {
+  width: min(100% - 32px, 590px);
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  padding: 28px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--background);
+  color: var(--text);
+  box-shadow: 0 20px 70px rgb(0 0 0 / 25%);
+}
+
+dialog::backdrop {
+  background: rgb(0 0 0 / 65%);
+}
+
+dialog h3 {
+  margin: 24px 0 8px;
+  color: var(--accent);
+  font-size: 0.9rem;
+}
+
+dialog p,
+.help-list {
+  font-size: 0.8rem;
+  line-height: 1.9;
+}
+
+.help-list {
+  padding-left: 22px;
+  color: var(--muted);
+}
+
+.help-list li {
+  margin-bottom: 12px;
+}
+
+.help-list strong {
+  color: var(--text);
+  font-weight: 400;
+}
+
+dialog .full-width {
+  margin-top: 10px;
+}
+
+/* Screen-reader-only text */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0 !important;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0 !important;
+}
+
+/* Tablet */
+
+@media (max-width: 700px) {
+  .shell {
+    width: calc(100% - 40px);
+  }
+
+  .site-header {
+    min-height: 90px;
+  }
+
+  main {
+    padding: 24px 0 40px;
+  }
+
+  .hero h1 {
+    font-size: 2.3rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+  }
+
+  .summary-stats > div:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .how-it-works {
+    gap: 16px;
+  }
+
+  .how-it-works li {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .site-footer {
+    flex-direction: column;
+    gap: 6px;
+  }
+}
+
+/* Phone */
+
+@media (max-width: 460px) {
+  .shell {
+    width: calc(100% - 32px);
+  }
+
+  .brand {
+    font-size: 1.6rem;
+  }
+
+  #helpButton {
+    padding-inline: 8px;
+    font-size: 0.75rem;
+  }
+
+  .hero h1 {
+    font-size: 2rem;
+  }
+
+  .hero-description {
+    font-size: 0.78rem;
+  }
+
+  .section-heading {
+    gap: 10px;
+  }
+
+  .section-heading h2 {
+    font-size: 0.85rem;
+  }
+
+  .difficulty-grid {
+    gap: 2px;
+    padding: 5px;
+  }
+
+  .difficulty-card {
+    padding: 12px 5px;
+  }
+
+  .difficulty-name {
+    font-size: 0.8rem;
+  }
+
+  .difficulty-words {
+    font-size: 0.62rem;
+  }
+
+  .difficulty-timing {
+    font-size: 0.6rem;
+  }
+
+  .home-bottom,
+  .result-bottom {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 20px;
+  }
+
+  .personal-best {
+    justify-content: center;
+  }
+
+  #startButton {
+    width: 100%;
+  }
+
+  .how-it-works {
+    grid-template-columns: 1fr;
+    gap: 18px;
+    margin-top: 32px;
+  }
+
+  .how-it-works li {
+    flex-direction: row;
+    gap: 12px;
+  }
+
+  .inline-group {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .actions .button {
+    flex: 1 1 140px;
+  }
+
+  .comparison-text {
+    padding: 14px;
+    font-size: 0.88rem;
+  }
+
+  .memory-panel,
+  textarea {
+    min-height: 190px;
+  }
+
+  dialog {
+    padding: 22px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+</style>
+</head>
+<body>
+<div class="shell">
+  <header class="site-header">
+    <div class="brand" aria-label="Recall">
+      <span class="brand-icon" aria-hidden="true">R</span>
+      <span>recall<span class="accent">.</span></span>
+    </div>
+    <button id="helpButton" class="button ghost" type="button">How to play</button>
+  </header>
+
+  <main>
+    <section id="homeScreen" aria-labelledby="homeTitle">
+      <div class="hero">
+        <p class="eyebrow">A FIVE-ROUND BRAIN SPRINT</p>
+        <h1 id="homeTitle">Remember more.<br><span class="accent">Type it back.</span></h1>
+        <p class="hero-description">A sentence. A few seconds. Just your memory. See how accurately you can recall it before the clock runs out.</p>
+      </div>
+
+      <div class="panel">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">MAKE IT YOUR CHALLENGE</p>
+            <h2>Choose your difficulty</h2>
+          </div>
+          <span class="badge">5 rounds</span>
+        </div>
+
+        <fieldset class="difficulty-fieldset">
+          <legend class="sr-only">Difficulty</legend>
+          <div id="difficultyOptions" class="difficulty-grid"></div>
+        </fieldset>
+
+        <div class="home-bottom">
+          <div class="personal-best">
+            <span id="homeBestLabel" class="muted">Easy personal best</span>
+            <strong id="homeBest">—</strong>
+          </div>
+          <button id="startButton" class="button primary" type="button">Start challenge <span aria-hidden="true">→</span></button>
+        </div>
+      </div>
+
+      <ol class="how-it-works">
+        <li><span class="step-number" aria-hidden="true">01</span><div><h3>Take it in</h3><p>Read the sentence before it disappears.</p></div></li>
+        <li><span class="step-number" aria-hidden="true">02</span><div><h3>Type it back</h3><p>Rebuild it from memory, not from the screen.</p></div></li>
+        <li><span class="step-number" aria-hidden="true">03</span><div><h3>Beat your best</h3><p>Finish five rounds and set a new record.</p></div></li>
+      </ol>
+    </section>
+
+    <section id="gameScreen" class="panel" aria-labelledby="phaseTitle" hidden>
+      <div class="section-heading">
+        <div class="inline-group">
+          <span id="gameRound" class="eyebrow">ROUND 1 OF 5</span>
+          <span id="gameDifficulty" class="badge">Easy</span>
+        </div>
+        <button id="exitGameButton" class="button ghost small" type="button">End session</button>
+      </div>
+
+      <div id="roundSteps" class="round-steps" aria-hidden="true"></div>
+      <h2 id="phaseTitle" class="phase-title" tabindex="-1">Take a mental snapshot.</h2>
+      <p id="phaseDescription" class="muted"></p>
+
+      <div id="timerRegion" class="timer-region" hidden>
+  <div class="timer-label">
+    <span>Time remaining</span>
+    <strong id="timeLeft" aria-hidden="true">40s</strong>
+  </div>
+  <progress id="timerBar" max="1" value="1" aria-label="Time remaining in this phase"></progress>
+</div>
+
+<div id="memorizeActions" class="actions" hidden>
+  <button id="skipReadButton" class="button primary" type="button">
+    Start typing →
+  </button>
+  <span class="hint">Press Enter to continue</span>
+</div>
+
+      <div id="memoryPanel" class="memory-panel">
+        <p class="eyebrow">REMEMBER THIS SENTENCE</p>
+        <p id="sentenceText" class="sentence"></p>
+      </div>
+
+      <div id="typingPanel" hidden>
+        <label for="answer">Your answer</label>
+        <textarea id="answer" rows="4" maxlength="500" placeholder="Type what you remember..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" aria-describedby="typingHint inputNotice" disabled></textarea>
+        <div class="input-footer">
+          <p id="typingHint" class="hint">Press <kbd>Enter</kbd> to submit.</p>
+          <span class="hint">Paste is disabled</span>
+        </div>
+        <p id="inputNotice" class="input-notice"></p>
+        <button id="submitButton" class="button primary full-width" type="button" disabled>Submit answer <span aria-hidden="true">→</span></button>
+      </div>
+    </section>
+
+    <section id="roundScreen" class="panel" aria-labelledby="roundTitle" hidden>
+      <p id="roundKicker" class="eyebrow">ROUND COMPLETE</p>
+      <h2 id="roundTitle" class="phase-title" tabindex="-1">Nice recall.</h2>
+      <p id="roundFeedback" class="muted"></p>
+
+      <dl class="stats-grid">
+        <div><dt>Accuracy</dt><dd id="resultAccuracy">0%</dd></div>
+        <div><dt>WPM</dt><dd id="resultWpm">0</dd></div>
+        <div><dt>Typing time</dt><dd id="resultTime">0s</dd></div>
+        <div class="highlight-stat"><dt>Round score</dt><dd id="resultScore">0</dd></div>
+      </dl>
+
+      <div class="comparison">
+        <h3>Original sentence</h3>
+        <p id="originalText" class="comparison-text"></p>
+        <h3>Your answer, annotated</h3>
+        <p id="emptyAnswerNote" class="hint" hidden>No answer was submitted.</p>
+        <div id="annotatedAnswer" class="comparison-text"></div>
+        <div class="diff-legend" aria-label="Mistake highlighting legend">
+          <span class="diff-replace">Incorrect</span>
+          <span class="diff-missing">Missing</span>
+          <span class="diff-extra">Extra</span>
+        </div>
+        <p class="hint">Dotted-underlined characters are missing from your answer. They are inserted here as guides. ␣ represents a space.</p>
+        <p id="errorCounts" class="hint"></p>
+        <details class="plain-answer"><summary>View your unmarked answer</summary><p id="plainAnswer" class="comparison-text"></p></details>
+      </div>
+
+      <div class="result-bottom">
+        <p class="muted">Session total <strong id="runningTotal" class="accent">0</strong></p>
+        <div class="actions">
+          <button id="exitResultButton" class="button secondary" type="button">End session</button>
+          <button id="nextButton" class="button primary" type="button">Next round →</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="summaryScreen" class="panel" aria-labelledby="summaryTitle" hidden>
+      <p id="summaryKicker" class="eyebrow">SESSION COMPLETE</p>
+      <h2 id="summaryTitle" class="phase-title" tabindex="-1">Five rounds. Well played.</h2>
+      <p id="summaryDescription" class="muted"></p>
+
+      <div class="total-score">
+  <span>Final grade</span>
+  <strong id="totalScore">A</strong>
+  <span id="gradeDetails">Based on average accuracy and speed</span>
+</div>
+
+      <dl class="stats-grid summary-stats">
+        <div><dt>Average accuracy</dt><dd id="averageAccuracy">0%</dd></div>
+        <div><dt>Average WPM</dt><dd id="averageWpm">0</dd></div>
+        <div class="highlight-stat"><dt>Personal best</dt><dd id="summaryBest">0</dd></div>
+      </dl>
+
+      <p id="bestRoundText" class="best-round"></p>
+      <p id="bestSaveNote" class="hint"></p>
+
+      <div class="table-wrapper">
+        <table>
+          <caption>Round breakdown</caption>
+          <thead><tr><th scope="col">Round</th><th scope="col">Accuracy</th><th scope="col">WPM</th><th scope="col">Score</th></tr></thead>
+          <tbody id="roundTableBody"></tbody>
+        </table>
+      </div>
+
+      <div class="actions summary-actions">
+        <button id="replayButton" class="button primary" type="button">Play again →</button>
+        <button id="changeDifficultyButton" class="button secondary" type="button">Change difficulty</button>
+      </div>
+    </section>
+  </main>
+
+  <p id="storageNotice" class="storage-notice" hidden></p>
+
+  <footer class="site-footer">
+    <span>A little focus goes a long way.</span>
+    <span>No accounts. No uploads. Just you.</span>
+  </footer>
+
+  <p id="status" class="sr-only" role="status" aria-atomic="true"></p>
+  <noscript><p class="storage-notice">Please enable JavaScript to play this game.</p></noscript>
+</div>
+
+<dialog id="helpDialog" aria-labelledby="helpTitle">
+  <form method="dialog">
+    <div class="section-heading">
+      <h2 id="helpTitle">How to play</h2>
+      <button class="button ghost small" type="submit" aria-label="Close instructions">✕</button>
+    </div>
+    <ol class="help-list">
+      <li><strong>Memorize.</strong> Read the sentence while the first timer runs.</li>
+      <li><strong>Recall.</strong> When it disappears, type it from memory.</li>
+      <li><strong>Submit.</strong> Press Enter or use the button. A timeout submits automatically.</li>
+      <li><strong>Repeat.</strong> Finish five rounds to get your session score.</li>
+    </ol>
+    <h3>What counts?</h3>
+    <p class="muted">Capitalization, punctuation, and internal spaces count. Leading and trailing whitespace is ignored. Missing, extra, and incorrect characters reduce accuracy.</p>
+    <h3>How scoring works</h3>
+    <p class="muted">WPM uses credited characters and typing time. Your score combines accuracy and WPM. Answers below 30% accuracy score zero. A one-second minimum is used when calculating WPM.</p>
+    <h3>Keep it fair</h3>
+    <p class="muted">Paste and drag-and-drop are blocked. Timers keep running when you switch tabs. Personal bests are stored in this browser, separately for each difficulty.</p>
+    <button class="button primary full-width" type="submit">Got it</button>
+  </form>
+</dialog>
+
+<script>
+"use strict";
+
+const ROUND_COUNT = 5;
+const MAX_INPUT_LENGTH = 500;
+const STORAGE_KEY = "recall.personalBests.v1";
+
+const DIFFICULTIES = {
+  easy: {
+    label:"Easy", words:"5–8", memorizeSeconds:8, typeSeconds:30,
+    sentences:[
+      "The small cat sleeps beside the window.","Fresh rain makes the garden smell sweet.","My favorite book is on the table.","Warm sunlight fills the quiet room.","We watched the stars after dinner.","Her blue notebook holds many bright ideas.","Small steps can lead to great changes.","The train arrived just before sunset.","A gentle breeze moved the curtains.","Please bring your umbrella this morning."
+    ]
+  },
+  medium: {
+    label:"Medium", words:"9–14", memorizeSeconds:8, typeSeconds:40,
+    sentences:[
+      "A quiet morning is the perfect time to learn something new.","The little bird built a warm nest above our kitchen window.","We walked through the park before the afternoon rain began.","My friend always writes important ideas in a small green notebook.","The old library stays open late during the final examination week.","A cup of warm tea helped me enjoy the rainy afternoon.","Our teacher asked everyone to explain the answer in their own words.","Every Saturday we buy fresh fruit from the market near home.","The fastest route to school passes beside a large stone bridge.","She saved a copy of her project before closing the laptop."
+    ]
+  },
+  hard: {
+    label:"Hard", words:"15–22", memorizeSeconds:7, typeSeconds:50,
+    sentences:[
+      "After the rain stopped, we followed the narrow path through the forest and watched the sunlight return.","Learning a new skill takes patience, regular practice, and the courage to make mistakes along the way.","Before leaving for school, she checked her backpack twice to make sure every important notebook was inside.","The students worked together to build a simple website that helped their classmates prepare for the science quiz.","When the power went out, we gathered around the kitchen table and told funny stories by candlelight.","Although the journey was longer than expected, everyone agreed that the beautiful mountain view made it worthwhile.","A careful reader notices small details, connects new ideas, and asks useful questions before reaching a final conclusion.","During the school holiday, my cousins visited our town and taught me a new card game every evening.","Instead of rushing through the assignment, he divided the work into smaller tasks and checked each part carefully.","We planted several young trees behind the classroom, hoping they would provide shade for future students during summer."
+    ]
+  }
+};
+
+const $ = (id) => document.getElementById(id);
+const SCREEN_IDS = ["homeScreen","gameScreen","roundScreen","summaryScreen"];
+const answerInput = $("answer");
+
+let state = { phase:"home" };
+let personalBests = {};
+let storageAvailable = true;
+
+function createElement(tag, className="", text=""){
+  const el = document.createElement(tag);
+  if (className) el.className = className;
+  el.textContent = text;
+  return el;
+}
+function announce(message){ $("status").textContent = message; }
+function showScreen(screenId){
+  for (const id of SCREEN_IDS) $(id).hidden = id !== screenId;
+  $("helpButton").hidden = screenId === "gameScreen";
+  window.scrollTo({ top:0, behavior:"auto" });
+}
+function selectedDifficulty(){
+  return document.querySelector('input[name="difficulty"]:checked')?.value || "easy";
+}
+
+function buildDifficultyOptions(){
+  const container = $("difficultyOptions");
+ for (const [key, settings] of Object.entries(DIFFICULTIES)){
+    const label = createElement("label","difficulty-option");
+    const input = document.createElement("input");
+    input.type = "radio"; input.name = "difficulty"; input.value = key; input.checked = key === "easy";
+    const card = createElement("span","difficulty-card");
+    card.append(
+      createElement("span","difficulty-name", settings.label),
+      createElement("span","difficulty-words", settings.words + " words"),
+      createElement("span","difficulty-timing", settings.memorizeSeconds + "s memorize · " + settings.typeSeconds + "s type")
+    );
+    label.append(input, card);
+    container.append(label);
+    input.addEventListener("change", refreshHomeBest);
+  }
+}
+function refreshHomeBest(){
+  const level = selectedDifficulty();
+  const settings = DIFFICULTIES[level];
+  const best = personalBests[level];
+  $("homeBestLabel").textContent = settings.label + " personal best";
+  $("homeBest").textContent = best ? best.score.toLocaleString() : "—";
+}
+
+function showStorageWarning(){
+  storageAvailable = false;
+  $("storageNotice").hidden = false;
+  $("storageNotice").textContent = "Browser storage could not be accessed. You can still play, but new best scores may last only for this visit.";
+}
+function loadPersonalBests(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return;
+    for (const level of Object.keys(DIFFICULTIES)){
+      const record = parsed[level];
+      if (record && Number.isSafeInteger(record.score) && record.score >= 0){
+        personalBests[level] = { score: record.score };
+      }
+    }
+  } catch { showStorageWarning(); }
+}
+function saveCompletedSessionBest(){
+  const previous = personalBests[state.level];
+  state.previousBest = previous?.score ?? null;
+  state.isNewBest = !previous || state.totalScore > previous.score;
+  if (!state.isNewBest) return;
+  personalBests[state.level] = { score: state.totalScore };
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(personalBests));
+    storageAvailable = true;
+    $("storageNotice").hidden = true;
+  } catch { showStorageWarning(); }
+  refreshHomeBest();
+}
+
+function shuffle(items){
+  const result = [...items];
+  for (let i = result.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}
+function startSession(level){
+  if (state.phase !== "home" && state.phase !== "summary") return;
+  const settings = DIFFICULTIES[level];
+  if (!settings) return;
+  const unique = [...new Set(settings.sentences)];
+  if (unique.length < ROUND_COUNT){
+    announce("This difficulty needs at least five unique sentences.");
+    return;
+  }
+  state = {
+    phase:"preparing", level,
+    deck: shuffle(unique).slice(0, ROUND_COUNT),
+    roundIndex:0, results:[], totalScore:0, target:"",
+    deadline:0, durationMs:0, typingStartedAt:0,
+    isNewBest:false, previousBest:null
+  };
+  startRound();
+}
+function renderRoundSteps(){
+  const container = $("roundSteps");
+  container.replaceChildren();
+  for (let i = 0; i < ROUND_COUNT; i++){
+    let cls = "round-step";
+    if (i < state.roundIndex) cls += " complete";
+    else if (i === state.roundIndex) cls += " current";
+    container.append(createElement("span", cls, String(i + 1)));
+  }
+}
+function startRound() {
+  const settings = DIFFICULTIES[state.level];
+
+  state.phase = "memorize";
+  state.target = state.deck[state.roundIndex];
+  state.durationMs = 0;
+  state.deadline = 0;
+
+  answerInput.value = "";
+  answerInput.disabled = true;
+  answerInput.maxLength = MAX_INPUT_LENGTH;
+
+  $("submitButton").disabled = true;
+  $("typingPanel").hidden = true;
+  $("inputNotice").textContent = "";
+
+  $("memoryPanel").hidden = false;
+  $("sentenceText").textContent = state.target;
+
+  $("gameRound").textContent =
+    `ROUND ${state.roundIndex + 1} OF ${ROUND_COUNT}`;
+
+  $("gameDifficulty").textContent = settings.label;
+
+  $("phaseTitle").textContent = "Read and remember.";
+  $("phaseDescription").textContent =
+    "Take as much time as you need, then press Enter or Start typing.";
+
+  $("timerRegion").hidden = true;
+  $("memorizeActions").hidden = false;
+
+  renderRoundSteps();
+  showScreen("gameScreen");
+
+  $("phaseTitle").focus();
+
+  announce(
+    `Round ${state.roundIndex + 1}. Read the sentence, then press Enter to begin typing.`
+  );
+}
+function beginTyping(startedAt = performance.now()) {
+  const settings = DIFFICULTIES[state.level];
+
+  if (state.phase !== "memorize") {
+    return;
+  }
+
+  state.phase = "type";
+  state.typingStartedAt = startedAt;
+  state.durationMs = settings.typeSeconds * 1000;
+  state.deadline = startedAt + state.durationMs;
+
+  $("sentenceText").textContent = "";
+  $("memoryPanel").hidden = true;
+
+  $("memorizeActions").hidden = true;
+  $("typingPanel").hidden = false;
+  $("timerRegion").hidden = false;
+
+  $("phaseTitle").textContent = "Your memory takes over.";
+  $("phaseDescription").textContent =
+    "Rebuild the sentence. Accuracy matters as much as speed.";
+
+  answerInput.disabled = false;
+  $("submitButton").disabled = false;
+
+  if (!document.hidden && performance.now() < state.deadline) {
+    answerInput.focus();
+  }
+
+  syncClock();
+
+  announce(
+    `Sentence hidden. Type from memory. You have ${settings.typeSeconds} seconds.`
+  );
+}
+
+function syncClock(now = performance.now()) {
+  if (state.phase === "type" && now >= state.deadline) {
+    finishRound(state.deadline, true);
+    return;
+  }
+
+  if (state.phase !== "type") {
+    return;
+  }
+
+  const remaining = Math.max(0, state.deadline - now);
+  const seconds = Math.ceil(remaining / 1000);
+  const label = `${seconds}s`;
+
+  if ($("timeLeft").textContent !== label) {
+    $("timeLeft").textContent = label;
+    $("timerBar").setAttribute(
+      "aria-valuetext",
+      `${seconds} seconds remaining`
+    );
+  }
+
+  $("timerBar").value = Math.min(1, remaining / state.durationMs);
+
+  $("timerRegion").classList.toggle(
+    "urgent",
+    remaining <= 3000
+  );
+}
+
+function animationLoop(){ syncClock(); requestAnimationFrame(animationLoop); }
+
+function compareText(original, typed){
+  const source = Array.from(original.trim());
+  const input = Array.from(typed.trim());
+  const rows = source.length, columns = input.length;
+  const matrix = Array.from({ length: rows + 1 }, () => new Uint16Array(columns + 1));
+  for (let i = 0; i <= rows; i++) matrix[i][0] = i;
+  for (let j = 0; j <= columns; j++) matrix[0][j] = j;
+  for (let i = 1; i <= rows; i++){
+    for (let j = 1; j <= columns; j++){
+      const cost = source[i - 1] === input[j - 1] ? 0 : 1;
+      matrix[i][j] = Math.min(matrix[i - 1][j] + 1, matrix[i][j - 1] + 1, matrix[i - 1][j - 1] + cost);
+    }
+  }
+  const operations = [];
+  let i = rows, j = columns;
+  while (i > 0 || j > 0){
+    if (i > 0 && j > 0 && source[i - 1] === input[j - 1] && matrix[i][j] === matrix[i - 1][j - 1]){
+      operations.push({ type:"equal", expected:source[i - 1], actual:input[j - 1] }); i--; j--;
+    } else if (i > 0 && j > 0 && matrix[i][j] === matrix[i - 1][j - 1] + 1){
+      operations.push({ type:"replace", expected:source[i - 1], actual:input[j - 1] }); i--; j--;
+    } else if (i > 0 && matrix[i][j] === matrix[i - 1][j] + 1){
+      operations.push({ type:"missing", expected:source[i - 1], actual:"" }); i--;
+    } else {
+      operations.push({ type:"extra", expected:"", actual:input[j - 1] }); j--;
+    }
+  }
+  operations.reverse();
+  const distance = matrix[rows][columns];
+  const credited = Math.max(0, rows - distance);
+  const accuracy = rows > 0 ? (credited / rows) * 100 : 0;
+  return { operations, creditedCharacters:credited, accuracy };
+}
+function calculateResult(original, typed, elapsedSeconds){
+  const c = compareText(original, typed);
+  const seconds = Math.max(1, elapsedSeconds);
+  const wpm = (c.creditedCharacters / 5) / (seconds / 60);
+  const score = c.accuracy < 30 ? 0 : Math.round((c.accuracy / 100) * wpm * 100);
+  return { ...c, original, typed, elapsedSeconds, wpm, score };
+}
+
+function finishRound(submittedAt = performance.now(), timedOut = false){
+  if (state.phase !== "type") return;
+  const settings = DIFFICULTIES[state.level];
+  const elapsedSeconds = Math.min(
+    settings.typeSeconds,
+    Math.max(0, (Math.min(submittedAt, state.deadline) - state.typingStartedAt) / 1000)
+  );
+  state.phase = "round-result";
+  answerInput.disabled = true;
+  $("submitButton").disabled = true;
+  const typed = answerInput.value.slice(0, MAX_INPUT_LENGTH);
+  const result = calculateResult(state.target, typed, elapsedSeconds);
+  result.timedOut = timedOut || submittedAt >= state.deadline;
+  state.results.push(result);
+  state.totalScore += result.score;
+  if (state.results.length === ROUND_COUNT) saveCompletedSessionBest();
+  renderRoundResult(result);
+}
+function submitCurrentAnswer(){
+  syncClock();
+  if (state.phase === "type") finishRound();
+}
+
+function characterName(ch){
+  if (ch === " ") return "space";
+  if (ch === "\n") return "line break";
+  if (ch === "\t") return "tab";
+  return `"${ch}"`;
+}
+function visibleCharacter(ch){
+  if (ch === " ") return "␣";
+  if (ch === "\n") return "↵";
+  if (ch === "\t") return "⇥";
+  return ch;
+}
+function renderAnnotatedAnswer(operations){
+  const container = $("annotatedAnswer");
+  container.replaceChildren();
+  const counts = { replace:0, missing:0, extra:0 };
+  for (const op of operations){
+    if (op.type === "equal"){ container.append(document.createTextNode(op.actual)); continue; }
+    counts[op.type]++;
+    let description, character;
+    if (op.type === "replace"){
+      character = op.actual;
+      description = `Incorrect ${characterName(op.actual)}; expected ${characterName(op.expected)}`;
+    } else if (op.type === "missing"){
+      character = op.expected;
+      description = `Missing ${characterName(op.expected)}`;
+    } else {
+      character = op.actual;
+      description = `Extra ${characterName(op.actual)}`;
+    }
+    const marker = createElement("span", `diff-${op.type}`);
+    marker.title = description;
+    const visual = createElement("span", "", visibleCharacter(character));
+    visual.setAttribute("aria-hidden", "true");
+    const accessible = createElement("span", "sr-only", ` [${description}] `);
+    marker.append(visual, accessible);
+    container.append(marker);
+  }
+  $("errorCounts").textContent =
+    `${counts.replace} incorrect · ${counts.missing} missing · ${counts.extra} extra characters`;
+}
+
+function renderRoundResult(result){
+  const roundNumber = state.roundIndex + 1;
+  $("roundKicker").textContent = `ROUND ${roundNumber} OF ${ROUND_COUNT} COMPLETE`;
+  let title, feedback;
+  if (!result.typed.trim()){
+    title = "A fresh start next round.";
+    feedback = "No answer was submitted. Try remembering a few words at a time.";
+  } else if (result.accuracy === 100){
+    title = "Perfect recall.";
+    feedback = "Every character matched. That is a sentence well remembered.";
+  } else if (result.accuracy >= 80){
+    title = "That was close.";
+    feedback = "Strong recall. Check the highlighted details below.";
+  } else if (result.accuracy >= 30){
+    title = "Keep building your rhythm.";
+    feedback = "Try breaking the sentence into two or three short phrases.";
+  } else {
+    title = "Memory takes practice.";
+    feedback = "Below 30% accuracy scores zero. Focus on recall before speed.";
+  }
+  $("roundTitle").textContent = title;
+  $("roundFeedback").textContent = (result.timedOut ? "Time’s up. " : "") + feedback;
+  $("resultAccuracy").textContent = result.accuracy.toFixed(1) + "%";
+  $("resultWpm").textContent = result.wpm.toFixed(1);
+  $("resultTime").textContent = result.elapsedSeconds.toFixed(1) + "s";
+  $("resultScore").textContent = result.score.toLocaleString();
+  $("originalText").textContent = result.original;
+  $("plainAnswer").textContent = result.typed.trim() ? result.typed : "(No answer submitted)";
+  $("emptyAnswerNote").hidden = Boolean(result.typed.trim());
+  document.querySelector(".plain-answer").open = false;
+  renderAnnotatedAnswer(result.operations);
+  $("runningTotal").textContent = state.totalScore.toLocaleString();
+  $("nextButton").textContent = roundNumber === ROUND_COUNT ? "View session summary →" : "Next round →";
+  $("exitResultButton").textContent = roundNumber === ROUND_COUNT ? "Back to home" : "End session";
+  showScreen("roundScreen");
+  $("roundTitle").focus();
+  announce(`Round ${roundNumber} complete. ${result.accuracy.toFixed(1)} percent accuracy. ${result.score} points.`);
+}
+function nextRoundOrSummary(){
+  if (state.phase !== "round-result") return;
+  if (state.results.length === ROUND_COUNT){ showSummary(); return; }
+  state.roundIndex++;
+  startRound();
+}
+
+function getLetterGrade(averageAccuracy, averageWpm) {
+  // Weighted performance score:
+  // accuracy matters more than speed
+  const performance =
+    (averageAccuracy * 0.75) +
+    (Math.min(averageWpm, 100) * 0.25);
+
+  if (performance >= 97) return "A+";
+  if (performance >= 93) return "A";
+  if (performance >= 90) return "A-";
+  if (performance >= 87) return "B+";
+  if (performance >= 83) return "B";
+  if (performance >= 80) return "B-";
+  if (performance >= 77) return "C+";
+  if (performance >= 73) return "C";
+  if (performance >= 70) return "C-";
+  if (performance >= 67) return "D+";
+  if (performance >= 63) return "D";
+  if (performance >= 60) return "D-";
+  return "F";
+}
+
+function showSummary(){
+  if (state.phase !== "round-result" || state.results.length !== ROUND_COUNT) return;
+  state.phase = "summary";
+  const settings = DIFFICULTIES[state.level];
+  const avgAcc = state.results.reduce((t, r) => t + r.accuracy, 0) / ROUND_COUNT;
+  const avgWpm = state.results.reduce((t, r) => t + r.wpm, 0) / ROUND_COUNT;
+  let bestIdx = 0;
+  state.results.forEach((r, i) => { if (r.score > state.results[bestIdx].score) bestIdx = i; });
+  const best = state.results[bestIdx];
+  $("summaryKicker").textContent = state.isNewBest ? "NEW PERSONAL BEST" : "SESSION COMPLETE";
+  $("summaryTitle").textContent = state.isNewBest ? "You set the bar higher." : "Five rounds. Well played.";
+  $("summaryDescription").textContent = `${settings.label} difficulty · ${ROUND_COUNT} rounds completed. ` + (state.isNewBest ? "This is your best recorded session at this difficulty." : "Another session, another chance to improve your recall.");
+  const grade = getLetterGrade(averageAccuracy, averageWpm);
+
+$("totalScore").textContent = grade;
+$("gradeDetails").textContent =
+  `${averageAccuracy.toFixed(1)}% avg accuracy · ${averageWpm.toFixed(1)} avg WPM`;
+  $("averageAccuracy").textContent = avgAcc.toFixed(1) + "%";
+  $("averageWpm").textContent = avgWpm.toFixed(1);
+  $("summaryBest").textContent = personalBests[state.level].score.toLocaleString();
+  $("bestRoundText").textContent = `Best round: Round ${bestIdx + 1} · ${best.score.toLocaleString()} points`;
+  $("bestSaveNote").textContent = storageAvailable
+    ? `Personal bests are saved in this browser, separately for ${settings.label} difficulty.`
+    : "Browser storage is unavailable. This best score is available for this visit only.";
+  const body = $("roundTableBody");
+  body.replaceChildren();
+  state.results.forEach((r, i) => {
+    const row = document.createElement("tr");
+    const th = createElement("th", "", String(i + 1));
+    th.scope = "row";
+    row.append(
+      th,
+      createElement("td", "", r.accuracy.toFixed(1) + "%"),
+      createElement("td", "", r.wpm.toFixed(1)),
+      createElement("td", "", r.score.toLocaleString())
+    );
+    body.append(row);
+  });
+  showScreen("summaryScreen");
+  $("summaryTitle").focus();
+  announce(`Session complete. Total score: ${state.totalScore} points.` + (state.isNewBest ? " New personal best." : ""));
+}
+
+function returnHome(){
+  state.phase = "home";
+  answerInput.disabled = true;
+  $("submitButton").disabled = true;
+  $("sentenceText").textContent = "";
+  refreshHomeBest();
+  showScreen("homeScreen");
+  document.querySelector('input[name="difficulty"]:checked').focus();
+  announce("Choose a difficulty to start a new session.");
+}
+function requestExit(){
+  const unfinished = ["memorize","type","round-result"].includes(state.phase) && state.results.length < ROUND_COUNT;
+  if (unfinished){
+    const ok = window.confirm("End this session? Your current progress will be lost, and an unfinished session will not update your personal best.");
+    if (!ok){ syncClock(); return; }
+  }
+  returnHome();
+}
+
+function blockAssistedInput(event){
+  event.preventDefault();
+  if (state.phase === "type"){
+    const msg = "Paste and drag-and-drop are disabled. Please type your answer.";
+    $("inputNotice").textContent = msg;
+    announce(msg);
+  }
+}
+document.addEventListener("keydown", (event) => {
+  if (event.key !== "Enter" || event.isComposing) {
+    return;
+  }
+
+  // Ignore Enter inside textarea during typing,
+  // because typing phase already uses Enter to submit.
+  if (
+    document.activeElement === answerInput &&
+    state.phase === "type"
+  ) {
+    return;
+  }
+
+  if (state.phase === "memorize") {
+    event.preventDefault();
+    beginTyping(performance.now());
+    return;
+  }
+
+  if (state.phase === "round-result") {
+    event.preventDefault();
+    nextRoundOrSummary();
+    return;
+  }
+
+  if (state.phase === "summary") {
+    event.preventDefault();
+    startSession(state.level);
+  }
+});
+answerInput.addEventListener("paste", blockAssistedInput);
+answerInput.addEventListener("drop", blockAssistedInput);
+answerInput.addEventListener("beforeinput", (event) => {
+  syncClock();
+  if (state.phase !== "type"){ event.preventDefault(); return; }
+  if (event.inputType?.startsWith("insertFromPaste") || event.inputType === "insertFromDrop") blockAssistedInput(event);
+});
+answerInput.addEventListener("keydown", (event) => {
+  if (event.key === "Enter" && !event.isComposing){ event.preventDefault(); submitCurrentAnswer(); }
+});
+$("skipReadButton").addEventListener("click", () => {
+  beginTyping(performance.now());
+});
+$("startButton").addEventListener("click", () => startSession(selectedDifficulty()));
+$("submitButton").addEventListener("click", submitCurrentAnswer);
+$("nextButton").addEventListener("click", nextRoundOrSummary);
+$("exitGameButton").addEventListener("click", requestExit);
+$("exitResultButton").addEventListener("click", requestExit);
+$("replayButton").addEventListener("click", () => startSession(state.level));
+$("changeDifficultyButton").addEventListener("click", returnHome);
+$("helpButton").addEventListener("click", () => $("helpDialog").showModal());
+document.addEventListener("visibilitychange", () => { if (!document.hidden) syncClock(); });
+
+loadPersonalBests();
+buildDifficultyOptions();
+refreshHomeBest();
+requestAnimationFrame(animationLoop);
+</script>
+</body>
+</html>
