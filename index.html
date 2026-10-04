@@ -3,59 +3,98 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#323437">
+  <meta name="theme-color" content="#232832">
   <title>Recall — Memory Typing Challenge</title>
+  <script>try{var t=localStorage.getItem("recall.theme.v1");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <script src="app.js" defer></script>
 </head>
 <body>
-  <div class="shell">
-    <header class="site-header">
+  <div class="app" id="app">
+    <aside class="sidebar" id="sidebar" aria-label="Main navigation">
       <div class="brand" aria-label="Recall">
         <span class="brand-icon" aria-hidden="true">R</span>
-        <span>recall<span class="accent">.</span></span>
+        <span class="nav-label brand-text">recall<span class="accent">.</span></span>
       </div>
-      <button id="helpButton" class="button ghost" type="button">How to play</button>
+      <p class="nav-heading nav-label">modes</p>
+      <nav class="nav-list">
+        <button id="navPlay" class="nav-item active" type="button" title="Play" aria-current="page"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M7 10h.01M11 10h.01M15 10h.01M7 14h10"/></svg><span class="nav-label">play</span></button>
+        <button id="navBests" class="nav-item" type="button" title="Personal bests"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5z"/></svg><span class="nav-label">bests</span></button>
+        <button id="navHelp" class="nav-item" type="button" title="How to play"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h6a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H3zM21 5h-6a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h7z"/></svg><span class="nav-label">how to play</span></button>
+      </nav>
+      <div class="sidebar-bottom">
+        <button id="navColors" class="nav-item" type="button" title="Colors"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.5 0 2-1 1.5-2-.5-1 0-2 1.5-2h2a3 3 0 0 0 3-3 9 9 0 0 0-8-11z"/><circle cx="7.5" cy="11" r="1"/><circle cx="11" cy="7" r="1"/><circle cx="16" cy="8" r="1"/></svg><span class="nav-label">colors</span></button>
+        <button id="navAbout" class="nav-item" type="button" title="About"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg><span class="nav-label">about</span></button>
+        <p class="version nav-label">v0.1 <span class="badge">beta</span></p>
+      </div>
+    </aside>
+
+    <div class="content">
+    <div class="shell">
+    <header class="site-header">
+      <h1 class="page-title">Memory Test</h1>
     </header>
 
     <main>
       <!-- HOME -->
       <section id="homeScreen" aria-labelledby="homeTitle">
         <div class="hero">
-          <p class="eyebrow">A FIVE-ROUND BRAIN SPRINT</p>
-          <h1 id="homeTitle">Remember more.<br><span class="accent">Type it back.</span></h1>
-          <p class="hero-description">A sentence. As long as you need to read it. Just your memory.
-            See how accurately you can recall it before the clock runs out.</p>
+          <h2 id="homeTitle" class="hero-title">Read it. Type it back.</h2>
+          <p class="hero-description">Memorize a sentence, then rebuild it from memory before the clock runs out.</p>
         </div>
 
         <div class="panel">
-          <div class="section-heading">
-            <div>
-              <p class="eyebrow">MAKE IT YOUR CHALLENGE</p>
-              <h2>Choose your difficulty</h2>
-            </div>
-            <span class="badge">5 rounds</span>
+          <h2 id="homeHeading" class="sr-only">Build your test</h2>
+          <div class="tool-group mode-switch" role="group" aria-label="Game mode">
+            <button type="button" class="tool" data-mode="classic" aria-pressed="false">classic · 5 rounds</button>
+            <button type="button" class="tool" data-mode="quick" aria-pressed="true">quick · 1 round</button>
           </div>
 
-          <fieldset class="difficulty-fieldset">
-            <legend class="sr-only">Difficulty</legend>
-            <div id="difficultyOptions" class="difficulty-grid"></div>
-          </fieldset>
+          <div id="classicOptions" hidden>
+            <fieldset class="difficulty-fieldset">
+              <legend class="sr-only">Difficulty</legend>
+              <div id="difficultyOptions" class="difficulty-grid"></div>
+            </fieldset>
+          </div>
+
+          <div id="quickOptions" class="toolbar">
+            <div class="tool-group" role="group" aria-label="What to memorize">
+              <button type="button" class="tool" data-kind="sentence" aria-pressed="true">sentence</button>
+              <button type="button" class="tool" data-kind="words" aria-pressed="false">random words</button>
+            </div>
+            <div class="tool-group" role="group" aria-label="Length">
+              <span id="sentenceSizes" class="tool-set">
+                <button type="button" class="tool" data-level="easy" aria-pressed="true">easy</button>
+                <button type="button" class="tool" data-level="medium" aria-pressed="false">medium</button>
+                <button type="button" class="tool" data-level="hard" aria-pressed="false">hard</button>
+              </span>
+              <span id="wordSizes" class="tool-set" hidden>
+                <button type="button" class="tool" data-count="5" aria-pressed="false">5</button>
+                <button type="button" class="tool" data-count="10" aria-pressed="true">10</button>
+                <button type="button" class="tool" data-count="15" aria-pressed="false">15</button>
+                <button type="button" class="tool" data-count="25" aria-pressed="false">25</button>
+              </span>
+            </div>
+            <div class="tool-group" role="group" aria-label="Seconds to type">
+              <button type="button" class="tool" data-seconds="15" aria-pressed="false">15</button>
+              <button type="button" class="tool" data-seconds="30" aria-pressed="true">30</button>
+              <button type="button" class="tool" data-seconds="60" aria-pressed="false">60</button>
+              <button type="button" class="tool" data-seconds="120" aria-pressed="false">120</button>
+              <button type="button" class="tool" data-seconds="custom" aria-pressed="false">custom</button>
+              <input id="customSecondsInput" class="seconds-input" type="number" min="5" max="600" value="45" aria-label="Custom seconds (5 to 600)" hidden>
+            </div>
+          </div>
 
           <div class="home-bottom">
+            <button id="startButton" class="button primary" type="button">Start</button>
             <div class="personal-best">
               <span id="homeBestLabel" class="muted">Easy personal best</span>
               <strong id="homeBest">—</strong>
             </div>
-            <button id="startButton" class="button primary" type="button">Start challenge <span aria-hidden="true">→</span></button>
           </div>
         </div>
-
-        <ol class="how-it-works">
-          <li><span class="step-number" aria-hidden="true">01</span><div><h3>Take it in</h3><p>Read the sentence for as long as you need.</p></div></li>
-          <li><span class="step-number" aria-hidden="true">02</span><div><h3>Type it back</h3><p>Rebuild it from memory against the clock.</p></div></li>
-          <li><span class="step-number" aria-hidden="true">03</span><div><h3>Earn a grade</h3><p>Finish five rounds and try to beat your best.</p></div></li>
-        </ol>
       </section>
 
       <!-- GAME -->
@@ -91,7 +130,7 @@
         </div>
 
         <div id="typingPanel" hidden>
-          <label for="answer">Your answer</label>
+          <label for="answer" class="sr-only">Your answer</label>
           <textarea id="answer" rows="4" maxlength="500" placeholder="Type what you remember..."
             autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
             aria-describedby="typingHint inputNotice" disabled></textarea>
@@ -128,7 +167,7 @@
             <span class="diff-missing">Missing</span>
             <span class="diff-extra">Extra</span>
           </div>
-          <p class="hint">Dotted-underlined characters are missing from your answer. They are inserted here as guides. ␣ represents a space.</p>
+          <p class="hint diff-note">Dotted-underlined characters are missing from your answer. They are inserted here as guides. ␣ represents a space.</p>
           <p id="errorCounts" class="hint"></p>
           <details class="plain-answer">
             <summary>View your unmarked answer</summary>
@@ -188,13 +227,102 @@
     <p id="storageNotice" class="storage-notice" hidden></p>
 
     <footer class="site-footer">
-      <span>A little focus goes a long way.</span>
       <span>No accounts. No uploads. Just you.</span>
     </footer>
 
     <p id="status" class="sr-only" role="status" aria-atomic="true"></p>
     <noscript><p class="storage-notice">Please enable JavaScript to play this game.</p></noscript>
+    </div>
+    </div>
   </div>
+
+  <!-- COLORS -->
+  <dialog id="colorsDialog" aria-labelledby="colorsTitle">
+    <form method="dialog">
+      <div class="section-heading">
+        <h2 id="colorsTitle">Colors</h2>
+        <button class="button ghost small" type="submit" aria-label="Close colors">✕</button>
+      </div>
+      <div id="themeList" class="theme-list" role="group" aria-label="Color themes"></div>
+    </form>
+  </dialog>
+
+  <!-- ABOUT -->
+  <dialog id="aboutDialog" class="wide" aria-labelledby="aboutTitle">
+    <form method="dialog">
+      <div class="section-heading">
+        <h2 id="aboutTitle">About</h2>
+        <button class="button ghost small" type="submit" aria-label="Close about">✕</button>
+      </div>
+
+      <h3>Purpose</h3>
+      <p class="muted">This website was made for the purpose of academic purposes.</p>
+      <p class="muted">I made this website because I find myself having trouble remembering recent events and when thinking about what website I should make, I wanted something interactive, fun, while keeping the users engaged as much as they want to.</p>
+
+      <h3>Privacy Policy, Cookies Policy &amp; Terms of Use</h3>
+      <p class="muted">The site ensures the security of your personal data. You can read more in our <a href="#policyPrivacy" class="doc-link">privacy policy</a>, <a href="#policyCookies" class="doc-link">cookies policy</a>, and <a href="#policyTerms" class="doc-link">terms of use</a>. You can also erase everything this site has saved in your browser.</p>
+
+      <details id="policyPrivacy" class="policy">
+        <summary>Privacy Policy</summary>
+        <p class="updated">Last updated: October 4, 2026</p>
+        <ul>
+          <li>Recall has no accounts, no ads and no analytics. What you type is checked in your browser and is never sent to a server.</li>
+          <li>Your browser stores your personal best for each difficulty, the last 60 sentences you were shown (so they don't repeat), and your color choice. This data stays on your device.</li>
+          <li>The Roboto Mono font loads from Google Fonts, so Google may receive your IP address and browser details when the page opens.</li>
+          <li>The site is not aimed at collecting personal information from anyone, including children.</li>
+          <li>Questions or requests: email the creator (see below).</li>
+        </ul>
+      </details>
+
+      <details id="policyCookies" class="policy">
+        <summary>Cookies Policy</summary>
+        <p class="updated">Last updated: October 4, 2026</p>
+        <ul>
+          <li>Recall does not set cookies and uses no advertising or tracking cookies.</li>
+          <li>It uses your browser's local storage, which works like a cookie by keeping small pieces of data on your device. It holds only the items listed in the Privacy Policy.</li>
+          <li>To manage this data, use "Clear saved data" below or clear site data in your browser settings.</li>
+        </ul>
+      </details>
+
+      <details id="policyTerms" class="policy">
+        <summary>Terms of Use</summary>
+        <p class="updated">Last updated: October 4, 2026</p>
+        <ul>
+          <li>Recall is a student project made for a school subject. It is free to use and provided "as is", without warranties of any kind.</li>
+          <li>Scores and personal bests are for fun and are saved only in your browser, so they can be lost if you clear your data or switch devices.</li>
+          <li>Please don't try to break, overload or tamper with the site.</li>
+          <li>The site's design, text and code belong to the creator. Please ask before copying or reusing them.</li>
+          <li>These terms may change as the project develops.</li>
+        </ul>
+      </details>
+
+      <div class="about-actions">
+        <button id="clearDataButton" class="button secondary" type="button">Clear saved data</button>
+      </div>
+
+      <h3>Creator</h3>
+      <dl class="about-dl">
+        <dt>Creator</dt><dd>Seanluke G. Gudez</dd>
+        <dt>Email</dt><dd><a href="mailto:seanlukegudez2828@gmail.com">seanlukegudez2828@gmail.com</a></dd>
+        <dt>School</dt><dd>Cebu Technological University Main Campus</dd>
+      </dl>
+
+      <button class="button primary full-width" type="submit">Close</button>
+    </form>
+  </dialog>
+
+  <!-- PERSONAL BESTS -->
+  <dialog id="bestsDialog" aria-labelledby="bestsTitle">
+    <form method="dialog">
+      <div class="section-heading">
+        <h2 id="bestsTitle">Personal bests</h2>
+        <button class="button ghost small" type="submit" aria-label="Close personal bests">✕</button>
+      </div>
+      <div id="bestsList" class="bests-list"></div>
+      <p class="muted">Scores are saved in this browser for each difficulty.</p>
+      <button class="button primary full-width" type="submit">Close</button>
+    </form>
+  </dialog>
 
   <!-- HOW TO PLAY -->
   <dialog id="helpDialog" aria-labelledby="helpTitle">
